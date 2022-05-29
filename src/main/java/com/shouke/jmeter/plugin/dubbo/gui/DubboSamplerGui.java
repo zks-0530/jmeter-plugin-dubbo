@@ -101,6 +101,7 @@ class TableViewRenderer extends JTextArea implements TableCellRenderer
 /**
  *  实现单元格内回车换行编辑
  */
+//                                      抽象单元格编辑器                 单元格编辑器
 class TableCellTextAreaEditor extends AbstractCellEditor implements TableCellEditor{
     private JTextArea textArea;
     private JTable table;
@@ -312,25 +313,40 @@ public class DubboSamplerGui extends AbstractSamplerGui {
         protocolSettings.setBorder(BorderFactory.createTitledBorder("协议配置"));
 
         JPanel registrySettingsHP = new HorizontalPanel(5,0.5F); // 注册中心配置水平面板 //组件之间的横向距离设置为 5
-        // 注册中心类型    JLabel:标签组件
+//        注册中心类型
+//        JLabel:标签组件
 //        SwingConstants.RIGHT 一组常量，通常用于在屏幕上定位和定位组件，框方向常数，用于指定框的右侧
         JLabel registryTypeLabel = new JLabel("注册中心类型：", SwingConstants.RIGHT);
+
+//        创建一个包含指定数组中的元素的JComboBox(组合框)。默认情况下，选择数组中的第一项(因此也选择数据模型)。参数items：插入到组合框中的对象数组
+//        JComboBox(E[] items)
         registryTypeText = new JComboBox<String>(new String[] {"zookeeper://", "multicast://", "redis://", "simple://", "none"});
 
+//        setPreferredSize（） 设置此组件的首选大小。如果preferredSize为空，UI将被要求获得首选大小。
+//        构造一个Dimension（尺寸），并将其初始化为指定的宽度和高度。
+//        参数:width -指定的宽度- height -指定的高度
         registryTypeText.setPreferredSize(new Dimension(100, 25)); // 设置ComboBox尺寸
+//        设置这个标签的组件。如果不标记组件，可以为空。如果设置了displayedMnemonic（助记符显示）属性，并且也设置了labelFor（使用）属性，
+//        那么在激活助记符时，标签将调用由labelFor属性指定的组件的requestFocus方法。
+//         c -该标签对应的组件，如果该标签不是某个组件的标签，则为空
         registryTypeLabel.setLabelFor(registryTypeText);
+//       设置 ？说明详情符号
         JLabel registryTypeHelpLable = new JLabel();
+//        添加图片
         registryTypeHelpLable.setIcon(new ImageIcon(getClass().getResource("/images/help.png")));
+//        添加说明语句
         registryTypeHelpLable.setToolTipText("直连Dubbo应用服务器请选择\"none\"");
 
         // 添加到 “协议配置水平面板”
-        registrySettingsHP.add(registryTypeLabel);
-        registrySettingsHP.add(registryTypeText);
-        registrySettingsHP.add(registryTypeHelpLable);
+        registrySettingsHP.add(registryTypeLabel); //注册中心类型
+        registrySettingsHP.add(registryTypeText); // 组合框内元素
+        registrySettingsHP.add(registryTypeHelpLable);// 设置 ？说明详情符号
 
         // 注册中心地址
         JLabel registryAddressLabel = new JLabel("     注册中心地址：", SwingConstants.RIGHT);
+//        构造一个新的TextField(文本输入框)。创建了一个默认模型，初始字符串为空，列数设置为0。
         registryAddressText = new JTextField();
+//        把这个组件添加上去
         registryAddressLabel.setLabelFor(registryAddressText);
         protocolSettings.add(registryAddressLabel);
 
@@ -364,11 +380,11 @@ public class DubboSamplerGui extends AbstractSamplerGui {
         rpcProtocolSettingsHP.add(rpcInvokeAddressHelpLable);
         protocolSettings.add(rpcProtocolSettingsHP);
 
-        //**************************************************
+//***********************************************************************************************************************************************
         //接口设置组框
         JPanel interfaceSettings = new VerticalPanel();
         interfaceSettings.setBorder(BorderFactory.createTitledBorder("接口设置"));
-
+//                                                 行高     垂直对齐
         JPanel  packageHP =  new HorizontalPanel(5,0.5F);
         // 包名称
         JLabel packageLabel = new JLabel("包名称：", SwingConstants.RIGHT);
@@ -585,7 +601,7 @@ public class DubboSamplerGui extends AbstractSamplerGui {
         consumerSettingsHP2.add(retriesText);
         interfaceSettings.add(consumerSettingsHP1);
         interfaceSettings.add(consumerSettingsHP2);
-
+//*******************************************************************************************************************************************
         // 请求参数组框
         JPanel methodArgSettings = new VerticalPanel();
         methodArgSettings.setBorder(BorderFactory.createTitledBorder("请求参数"));
@@ -603,17 +619,33 @@ public class DubboSamplerGui extends AbstractSamplerGui {
 
         // 表格参数面板
         JPanel tablePanel = new HorizontalPanel();
-
+//        构造一个默认的DefaultTableModel(默认的表格模型)，它是一个无列无行的表。
         model = new DefaultTableModel();
-        model.setDataVector(null, columnNames); // 设置表头名称
+//        将dataVector实例变量中的值替换为数组dataVector中的值。Object[][]数组中的第一个索引是行索引，
+//        第二个是列索引。columnidentifier是新列的名称。
+//        参数:dataVector—新的数据向量columnidentifier—列的名称
+        model.setDataVector(null, columnNames); // 设置表头名称  "参数类型", "参数值"
+//        构造一个JTable，它使用dm作为数据模型、一个默认列模型和一个默认选择模型进行初始化。
+//        dm—表的数据模型
         final JTable table = new JTable(model);
 //        table.setRowHeight(30); // 设置行高
-        table.setDefaultRenderer(Object.class, new TableViewRenderer());     // 设置JTable单元格默认渲染器
+        table.setDefaultRenderer(Object.class, new TableViewRenderer());     // 设置JTable单元格默认渲染器  自动换行
         table.setDefaultEditor(Object.class, new TableCellTextAreaEditor()); // 设置JTable单元格默认编辑器
+        /**
+         * 如果value为空，此方法将删除该属性。客户端属性的更改将通过PropertyChange事件报告。
+         * 属性的名称(为了方便使用PropertyChange事件)是key.toString()。
+         * clientProperty字典并不打算支持对JComponent的大规模扩展，也不应该把它当作设计新组件时子类化的替代方案。
+         * 参数:key -新客户端属性键值-新客户端属性值;如果为空，此方法将删除该属性
+         * terminateEditOnFocusLost:终止编辑焦点丢失
+         */
         table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE); // 失去光标退出编辑
 
 
         //表格滚动条
+        /**  JScrollPane()
+         * 创建一个JScrollPane(J滚动窗格)，它显示指定组件的内容，当组件的内容比视图大时，水平和垂直滚动条都会出现在其中。
+         * 参数:view -要显示在滚动窗格的视口中的组件
+         */
         JScrollPane scrollpane = new JScrollPane(table){
             @Override
             public Dimension getPreferredSize() {
@@ -626,12 +658,30 @@ public class DubboSamplerGui extends AbstractSamplerGui {
         methodArgSettings.add(tablePanel);
 
         JPanel btnPanel = new HorizontalPanel();
+        /**  setLayout()
+         * 设置此容器的布局管理器。
+         * 此方法会更改与布局相关的信息，因此会使组件层次结构失效。
+         * Params: mgr -指定的布局管理器
+         *
+         * FlowLayout() 流布局 流程配置 流水布局 流程布局
+         *  this(CENTER, 5, 5);
+         * 构建一个新的FlowLayout，以居中对齐和默认的5个单位水平和
+         */
         btnPanel.setLayout(new FlowLayout()); //流式布局
         // 添加按钮
         JButton addBtn = new JButton("增加");
+        /**
+         * ActionListener
+         *向按钮添加ActionListener,l -要添加的ActionListener
+         * ActionListener
+         * 用于接收操作事件的侦听器接口。对处理操作事件感兴趣的类实现了这个接口，用这个类创建的对象使用组件的addActionListener方法注册到组件中。
+         * 当操作事件发生时，将调用该对象的actionPerformed方法。
+         */
         addBtn.addActionListener(new ActionListener() {
            @Override
-           public  void actionPerformed(ActionEvent arg0) { model.addRow(tmpRow);}
+           public  void actionPerformed(ActionEvent arg0) {
+               model.addRow(tmpRow);
+           }
         });
 
         // 删除按钮
@@ -639,10 +689,22 @@ public class DubboSamplerGui extends AbstractSamplerGui {
         delBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
+                /**
+                 * 返回第一个选定行的索引，
+                 * 如果没有选定行，则返回-1。返回:第一个选定行的索引
+                 */
                 int rowIndex = table.getSelectedRow();
+//                返回第一个选定的行
                 if(rowIndex != -1) {
                     model.removeRow(rowIndex);
                 } else {
+                    /**
+                     * 返回在无限空间的情况下，JTable中可以显示的行数。如果指定了带有过滤器的RowSorter，
+                     * 返回的行数可能与底层TableModel的行数不同。
+                     * 返回:JTable中显示的行数
+                     * 参见:getColumnCount
+                     */
+//                    没有选定时则返回 -1，走下面流程
                     int rows = table.getRowCount();
                     if (rows >= 1) {
                         rowIndex = rows - 1;
@@ -652,24 +714,54 @@ public class DubboSamplerGui extends AbstractSamplerGui {
             }
         });
 
-        btnPanel.add(delBtn, FlowLayout.CENTER);
-        btnPanel.add(addBtn, FlowLayout.CENTER);
+        btnPanel.add(delBtn, FlowLayout.CENTER);//删除
+        btnPanel.add(addBtn, FlowLayout.CENTER);//增加
         methodArgSettings.add(btnPanel);
 
         interfaceSettings.add(methodArgSettings);
 
         //设置总panel，垂直布局
         JPanel settingPanel = new VerticalPanel();
+        /**                     使边境
+         *  protected Border makeBorder() {
+         *         return BorderFactory.createEmptyBorder(10, 10, 5, 10);
+         *     }
+         * 创建一个占用空间但不绘图的空边框，指定顶部、左侧、底部和右侧的宽度。
+         * 参数:前一个整数指定的宽度,以像素为单位离开——一个整数指定左边的宽度,
+         * 以像素为单位底——一个整数指定底部的宽度,以像素为单位的,一个整数指定右边的宽度,以像素为单位
+         * 返回:Border对象进入翻译页面                   10      10          5          10
+         *public static Border createEmptyBorder(int top, int left, int bottom, int right) {
+         *         return new EmptyBorder(top, left, bottom, right);}
+         */
         settingPanel.setBorder(makeBorder());
+//       使标题面板
         settingPanel.add(makeTitlePanel());
-
+//       创建GUI的协议配置组框
         settingPanel.add(protocolSettings);
+//        //接口设置组框
         settingPanel.add(interfaceSettings);
 
 
         //全局布局设置
+        /**  setLayout()
+         * 设置此容器的布局管理器。此方法会更改与布局相关的信息，因此会使组件层次结构失效。Params: mgr -指定的布局管理器,
+         * 参见:doLayout, getLayout, invalidate
+         * ---------------------------------------
+         * 区域布局 边框布局 边界布局 页面布局
+         * BorderLayout()
+         * 构造具有组件之间指定间隙的边框布局。水平间隙由hgap指定，垂直间隙由vgap指定。
+         * 参数:
+         * hgap -水平间隙。
+         * Vgap -垂直间隙。
+         */
         setLayout(new BorderLayout(0, 5));
         setBorder(makeBorder());
+        /**
+         * 将指定的组件添加到此容器的末尾。还通知布局管理器使用指定的约束对象将组件添加到该容器的布局中。这对addImpl来说是一种方便的方法。
+         * 此方法会更改与布局相关的信息，因此会使组件层次结构失效。如果容器已经显示，则必须随后验证层次结构，以便显示添加的组件。
+         * comp——要添加约束的组件——一个表示该组件布局约束的对象
+         * 抛出: NullPointerException
+         */
         add(settingPanel, BorderLayout.CENTER);
     }
 
